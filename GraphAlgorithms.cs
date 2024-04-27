@@ -51,6 +51,75 @@ public static class GraphAlgorithms
         sb.AppendLine("}");
         return sb.ToString();
     } 
+    
+    //zwraca int , parametr this IGraphWeighted<T>
+    public static int ConnectedComponents<T>(this IGraphNonWeighted<T> g) where T : IEquatable<T>
+    {
+        var start = DateTime.Now;
+        var visited = new HashSet<T>();
+        var components = 0;
 
+        var vertices = g.Vertices.ToHashSet();
+
+        foreach(var vertex in g.Vertices)
+        {
+            if(visited.Contains(vertex)) continue;
+
+            foreach(var v  in DFS(g, vertex))
+            {
+                visited.Add(v);
+            }
+
+            components++;
+        }
+        var stop = DateTime.Now;
+        Console.WriteLine(stop - start);
+        return components;
+    }
+
+    //zwraca int , parametr this IGraphWeighted<T>
+    public static int ConnectedComponentsOptymalied<T>(this IGraphNonWeighted<T> g) where T : IEquatable<T>
+    {
+        var start = DateTime.Now;
+        var components = 0;
+        var vertices = g.Vertices.ToHashSet();
+
+        while (vertices.Count > 0)
+        {
+            foreach (var v in g.DFS(vertices.First()))
+            {
+                vertices.Remove(v);
+            }
+
+            components++;
+        }
+        var stop = DateTime.Now;
+        Console.WriteLine(stop - start);
+        return components;
+    }
+
+    public static List<IEnumerable<T>> ConnectedComponentsOptymaliedList<T>(this IGraphNonWeighted<T> g) where T : IEquatable<T>
+    {
+        var start = DateTime.Now;
+
+        List<IEnumerable<T>> components = new();
+
+        var vertices = g.Vertices.ToHashSet();
+
+        while (vertices.Count > 0)
+        {
+            var verticlesListComponent = g.DFS(vertices.First());
+            components.Add(verticlesListComponent);
+
+            foreach (var v in verticlesListComponent)
+            {
+                vertices.Remove(v);
+            }
+        }
+
+        var stop = DateTime.Now;
+        Console.WriteLine(stop - start);
+        return components;
+    }
 
 } 
